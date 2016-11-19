@@ -1,5 +1,7 @@
 // @flow
 import React from 'react';
+import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import { ApolloProvider } from 'react-apollo';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router, hashHistory } from 'react-router';
@@ -12,11 +14,17 @@ import './app.global.css';
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
+const client = new ApolloClient({
+  networkInterface: createNetworkInterface({ uri: 'http://localhost:8080/graphql' })
+});
+
 render(
-  <Provider store={store}>
-    <MuiThemeProvider>
-      <Router history={history} routes={routes} />
-    </MuiThemeProvider>
-  </Provider>,
+  <ApolloProvider client={client}>
+    <Provider store={store}>
+      <MuiThemeProvider>
+        <Router history={history} routes={routes} />
+      </MuiThemeProvider>
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('root')
 );

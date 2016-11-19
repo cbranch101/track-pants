@@ -149,10 +149,13 @@
     "webpack-validator": "^2.2.9"
   },
   "dependencies": {
+    "apollo-client": "^0.5.2",
     "electron-debug": "^1.0.1",
     "font-awesome": "^4.7.0",
+    "graphql-tag": "^0.1.16",
     "material-ui": "^0.16.1",
     "react": "^15.3.2",
+    "react-apollo": "^0.5.16",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
     "react-router": "^3.0.0",
