@@ -21,7 +21,9 @@
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl",
-    "cleanup": "mop -v"
+    "cleanup": "mop -v",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "build": {
     "appId": "org.develar.ElectronReact",
@@ -146,7 +148,8 @@
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.1",
     "webpack-merge": "^0.15.0",
-    "webpack-validator": "^2.2.9"
+    "webpack-validator": "^2.2.9",
+    "@kadira/storybook": "^2.21.0"
   },
   "dependencies": {
     "apollo-client": "^0.5.2",
