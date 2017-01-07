@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -13,10 +12,7 @@ import './app.global.css';
 
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
-
-const client = new ApolloClient({
-  networkInterface: createNetworkInterface({ uri: 'http://localhost:8080/graphql' })
-});
+import client from './apollo-client';
 
 render(
   <ApolloProvider client={client}>
