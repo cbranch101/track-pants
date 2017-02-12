@@ -13,9 +13,6 @@ const taskType = PropTypes.shape({
     actualPoms: PropTypes.number,
 })
 
-const Test = () => {
-    return <div />
-}
 
 const TaskList = ({ tasks, startTask, completeTask, editTask, deleteTask }) => (
     <Table

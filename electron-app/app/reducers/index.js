@@ -5,9 +5,9 @@ import { reducer as form } from 'redux-form';
 import client from '../apollo-client';
 
 const rootReducer = combineReducers({
-  apollo: client.reducer(),
-  routing,
-  form,
+    apollo: client.reducer(),
+    routing,
+    form,
 });
 
 export default rootReducer;
