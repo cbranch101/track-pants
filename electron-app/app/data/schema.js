@@ -1,24 +1,18 @@
 import { makeExecutableSchema } from 'graphql-tools'
-import Widget from './widget'
-
-const widget = {
-    name: 'test',
-};
-
-export function resetData() {
-    widget.name = 'foo';
-}
+import Task from './task'
 
 const RootQuery = `
     type Query {
-        widget : Widget
+        # get all tasks
+        taskList : [Task]
     }
 `
 
 const Mutations = `
     type Mutation {
-        createWidget(id: String, name: String): Widget
-        setWidgetName(name: String): Widget
+        createTask(task: TaskInput): Task
+        updateTask(id: String, task: TaskInput): Task
+        removeTask(id: String): String
     }
 `
 
@@ -31,22 +25,18 @@ const SchemaDefinition = `
 
 const resolvers = {
     Query: {
-        widget: (query, args, { tasks }) => {
-            return tasks.findByID(args.id)
+        taskList: (query, args, { tasks }) => {
+            return tasks.findAll()
         }
     },
     Mutation: {
-        createWidget: (mutation, args, db) => {
-            return db.tasks.insert(args)
-        },
-        setWidgetName: (mutation, args, context) => {
-            widget.name = args.name
-            return Promise.resolve(widget)
-        }
+        createTask: (mutation, args, { tasks }) => tasks.insert(args.task),
+        removeTask: (mutation, args, { tasks }) => tasks.remove(args.id),
+        updateTask: (mutation, args, { tasks }) => tasks.update(args.id, args.task)
     },
 }
 
 export default makeExecutableSchema({
-    typeDefs: [SchemaDefinition, RootQuery, Widget, Mutations],
+    typeDefs: [SchemaDefinition, RootQuery, Task, Mutations],
     resolvers,
 })

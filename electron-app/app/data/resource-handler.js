@@ -1,16 +1,37 @@
 
-const defaultMethods = {
-    findByID: (collection, id) => {
-        return collection.find().where('id').eq(id).exec()
-            .then(
-                data => {
-                    return data[0]
-                }
-            )
-    },
-    insert: (collection, item) => {
-        return collection.insert(item)
+
+const findById = (collection, id) => {
+    return collection.findOne({
+        _id: { $eq: id }
+    }).exec()
+}
+
+const insert = (collection, item) => collection.insert(item)
+const findAll = (collection) => collection.find().exec()
+const update = async (collection, id, fields) => {
+    const doc = await findById(collection, id)
+    Object.keys(fields).forEach(
+        field => doc.set(field, fields[field])
+    )
+    await doc.save()
+    return {
+        ...doc,
+        ...fields,
     }
+}
+
+const remove = async (collection, id) => {
+    const doc = await findById(collection, id)
+    await doc.remove()
+    return id
+}
+
+const defaultMethods = {
+    findById,
+    findAll,
+    update,
+    insert,
+    remove,
 }
 
 const ResourceHandler = () => {
