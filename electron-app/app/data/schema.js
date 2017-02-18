@@ -17,6 +17,7 @@ const RootQuery = `
 
 const Mutations = `
     type Mutation {
+        createWidget(id: String, name: String): Widget
         setWidgetName(name: String): Widget
     }
 `
@@ -30,11 +31,15 @@ const SchemaDefinition = `
 
 const resolvers = {
     Query: {
-        widget: () => Promise.resolve(widget),
+        widget: (query, args, { tasks }) => {
+            return tasks.findByID(args.id)
+        }
     },
     Mutation: {
-        setWidgetName: (mutation, args) => {
-            console.log(args)
+        createWidget: (mutation, args, db) => {
+            return db.tasks.insert(args)
+        },
+        setWidgetName: (mutation, args, context) => {
             widget.name = args.name
             return Promise.resolve(widget)
         }

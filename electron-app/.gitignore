@@ -30,6 +30,9 @@ app/node_modules
 # OSX
 .DS_Store
 
+# PouchDB
+\_pouch_*
+
 # App packaged
 release
 app/main.js

@@ -7,6 +7,8 @@
     "node": true
   },
   "rules": {
+    "global-require": ["off"],
+    "no-param-reassign": ["off"],
     "arrow-parens": ["off"],
     "consistent-return": "off",
     "comma-dangle": "off",
