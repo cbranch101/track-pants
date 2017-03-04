@@ -26,13 +26,25 @@ const SchemaDefinition = `
 const resolvers = {
     Query: {
         taskList: (query, args, { tasks }) => {
-            return tasks.findAll()
+            return tasks.findAll().catch(
+                e => {
+                    throw e
+                }
+            )
         }
     },
+    Task: {
+        id: (task) => task._id
+    },
     Mutation: {
-        createTask: (mutation, args, { tasks }) => tasks.insert(args.task),
+        createTask: (mutation, args, { tasks }) => {
+            return tasks.insert(args.task)
+        },
         removeTask: (mutation, args, { tasks }) => tasks.remove(args.id),
-        updateTask: (mutation, args, { tasks }) => tasks.update(args.id, args.task)
+        updateTask: (mutation, args, { tasks }) => {
+            console.log(args)
+            tasks.update(args.id, args.task)
+        }
     },
 }
 

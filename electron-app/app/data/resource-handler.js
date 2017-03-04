@@ -44,7 +44,7 @@ const ResourceHandler = () => {
             const promises = Object.keys(resourceOptions).map(
                 (resourceName) => {
                     const resourceOption = resourceOptions[resourceName]
-                    return db.collection(resourceName, resourceOption.schema).then(
+                    return db.collection(resourceOption.collectionName, resourceOption.schema).then(
                         collection => {
                             const suppliedMethods = resourceOptions.methods || {}
                             const combinedMethods = {

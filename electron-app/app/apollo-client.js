@@ -29,7 +29,8 @@ const client = new ApolloClient({
                     }
                 )
         }
-    }
+    },
+    dataIdFromObject: o => o.id,
 })
 
 
