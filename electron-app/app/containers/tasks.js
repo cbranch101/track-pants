@@ -33,7 +33,7 @@ const CreateTaskMutation = gql`
     }
 `
 const withTasks = graphql(TaskQuery, {
-    props: ({ data: { taskList: tasks, loading } }) => {
+    props: ({ data, data: { taskList: tasks, loading, error } }) => {
         return {
             loading,
             tasks,

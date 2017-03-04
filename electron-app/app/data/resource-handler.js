@@ -7,7 +7,7 @@ const findById = (collection, id) => {
 }
 
 const insert = (collection, item) => collection.insert(item)
-const findAll = (collection) => collection.find().exec()
+const findAll = (collection) => collection.find().sort({ createdAt: 1 }).exec()
 const update = async (collection, id, fields) => {
     const doc = await findById(collection, id)
     Object.keys(fields).forEach(

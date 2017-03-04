@@ -42,8 +42,14 @@ const resolvers = {
         },
         removeTask: (mutation, args, { tasks }) => tasks.remove(args.id),
         updateTask: (mutation, args, { tasks }) => {
-            console.log(args)
-            tasks.update(args.id, args.task)
+            return tasks.update(args.id, args.task).then(
+                data => {
+                    return {
+                        _id: args.id,
+                        ...args.task,
+                    }
+                }
+            )
         }
     },
 }

@@ -163,6 +163,7 @@
     "electron-debug": "^1.0.1",
     "font-awesome": "^4.7.0",
     "graphql": "^0.8.2",
+    "graphql-anywhere": "^2.2.0",
     "graphql-tag": "^1.2.4",
     "graphql-tools": "^0.10.0",
     "immutability-helper": "^2.1.2",

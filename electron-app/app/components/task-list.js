@@ -1,21 +1,26 @@
 import React, { PropTypes } from 'react'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
-import FlatButton from 'material-ui/FlatButton'
-import IconButton from 'material-ui/IconButton';
-import TextField from 'material-ui/TextField';
-import FontIcon from 'material-ui/FontIcon';
 import gql from 'graphql-tag'
+import { propType } from 'graphql-anywhere'
+import FlatButton from 'material-ui/FlatButton'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
-const taskType = PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    estimatedPoms: PropTypes.number.isRequired,
-    actualPoms: PropTypes.number,
-})
+import TaskRow from './task-row'
+
+
+const fragments = {
+    task: gql`
+        fragment TaskList on Task {
+            id
+            name
+            estimatedPoms
+        }
+    `
+}
 
 class TaskList extends React.Component {
+    static fragments = fragments
     static propTypes = {
-        tasks: PropTypes.arrayOf(taskType),
+        tasks: PropTypes.arrayOf(propType(fragments.task)),
         loading: PropTypes.bool.isRequired,
         startTask: PropTypes.func.isRequired,
         completeTask: PropTypes.func.isRequired,
@@ -46,13 +51,13 @@ class TaskList extends React.Component {
             estimatedPoms: 1,
         } })
     }
-    saveOrUpdateTask = ({ id, name, estimatedPoms }) => {
+    saveOrUpdateTask = ({ id, name, estimatedPoms, createdAt = Date.now() / 1000 }) => {
         const task = {
             name,
-            estimatedPoms
+            estimatedPoms,
         }
         if (id) return this.props.updateTask(id, task)
-        return this.props.createTask(task)
+        return this.props.createTask({ ...task, createdAt })
     }
     handleSaveTask = () => {
         return this.saveOrUpdateTask(this.state.editedTask).then(
@@ -74,62 +79,31 @@ class TaskList extends React.Component {
             <TableRowColumn />
         </TableRow>)
 
-        const getEditedTaskRow = (task) => (
-            <TableRow key={task.id || 'create-new'}>
-                <TableRowColumn>
-                    <TextField
-                        fullWidth
-                        hintText={'Describe Task'}
-                        value={task.name}
-                        onChange={this.handleTaskNameChange}
-                    />
-                </TableRowColumn>
-                <TableRowColumn>
-                    <IconButton onClick={() => this.handleEstimatedPomChange(true)}>
-                        <FontIcon className="material-icons">add_circle</FontIcon>
-                    </IconButton>
-                    {task.estimatedPoms}
-                    <IconButton onClick={() => this.handleEstimatedPomChange(false)}>
-                        <FontIcon className="material-icons">remove_circle</FontIcon>
-                    </IconButton>
-                </TableRowColumn>
-                <TableRowColumn>
-                    <FlatButton onClick={this.handleSaveTask}>Save</FlatButton>
-                    <FlatButton onClick={this.handleCancelEdit}>Cancel</FlatButton>
-                </TableRowColumn>
-            </TableRow>
-        )
-
-        const getTaskRow = (task) => {
-            const { id, name, actualPoms = 0, estimatedPoms } = task
-            if (this.state.editedTask && this.state.editedTask.id === id) {
-                return getEditedTaskRow({ ...task, ...this.state.editedTask })
-            }
-            return (
-                <TableRow key={id}>
-                    <TableRowColumn>{name}</TableRowColumn>
-                    <TableRowColumn>{actualPoms} / {estimatedPoms}</TableRowColumn>
-                    <TableRowColumn>
-                        <IconButton onClick={() => startTask(id)}>
-                            <FontIcon className="material-icons">play_arrow</FontIcon>
-                        </IconButton>
-                        <IconButton onClick={() => completeTask(id)}>
-                            <FontIcon className="material-icons">check_circle</FontIcon>
-                        </IconButton>
-                        <IconButton onClick={() => this.handleEditTask(task)}>
-                            <FontIcon className="material-icons">mode_edit</FontIcon>
-                        </IconButton>
-                        <IconButton onClick={() => deleteTask(id)}>
-                            <FontIcon className="material-icons">remove_circle</FontIcon>
-                        </IconButton>
-                    </TableRowColumn>
-                </TableRow>
-            )
+        const getTaskRow = (task, edited) => {
+            return (<TaskRow
+                key={task.id || 'create-new'}
+                edited={edited}
+                task={task}
+                onStart={startTask}
+                onComplete={completeTask}
+                onEdit={this.handleEditTask}
+                onSave={this.handleSaveTask}
+                onCancelEdit={this.handleCancelEdit}
+                onDelete={deleteTask}
+                onPomChange={this.handleEstimatedPomChange}
+                onTaskNameChange={this.handleTaskNameChange}
+            />)
         }
 
 
-        const rows = tasks.map(getTaskRow)
-        const bottomRow = editedTask && !editedTask.id ? getEditedTaskRow(editedTask) : createNewRow
+        const rows = tasks ? tasks.map(
+            task => {
+                const edited = !!(this.state.editedTask && this.state.editedTask.id === task.id)
+                const finalTask = edited ? { ...task, ...this.state.editedTask } : task
+                return getTaskRow(finalTask, edited)
+            }
+        ) : []
+        const bottomRow = editedTask && !editedTask.id ? getTaskRow(editedTask, true) : createNewRow
         const rowsWithButton = [...rows, bottomRow]
         if (loading) return <div>Loading</div>
         return (
@@ -154,16 +128,6 @@ class TaskList extends React.Component {
             </div>
         )
     }
-}
-
-TaskList.fragments = {
-    task: gql`
-        fragment TaskList on Task {
-            id
-            name
-            estimatedPoms
-        }
-    `
 }
 
 export default TaskList
