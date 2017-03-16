@@ -18,6 +18,12 @@ class TaskRow extends React.Component {
         onStart: PropTypes.func.isRequired,
         onComplete: PropTypes.func.isRequired,
     }
+    handleKeyDown = (e) => {
+        if (this.props.edited) {
+            if (e.key === 'Enter') this.props.onSave()
+            if (e.key === 'Escape') this.props.onCancelEdit()
+        }
+    }
     render() {
         const {
             id,
@@ -41,6 +47,7 @@ class TaskRow extends React.Component {
             return (<TableRow>
                 <TableRowColumn>
                     <TextField
+                        onKeyDown={this.handleKeyDown}
                         fullWidth
                         hintText={'Describe Task'}
                         value={task.name}
