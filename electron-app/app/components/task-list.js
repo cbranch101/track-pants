@@ -25,7 +25,7 @@ class TaskList extends React.Component {
         startTask: PropTypes.func.isRequired,
         completeTask: PropTypes.func.isRequired,
         updateTask: PropTypes.func.isRequired,
-        deleteTask: PropTypes.func.isRequired,
+        removeTask: PropTypes.func.isRequired,
         createTask: PropTypes.func.isRequired,
     }
     state = {
@@ -50,6 +50,9 @@ class TaskList extends React.Component {
             name: '',
             estimatedPoms: 1,
         } })
+    }
+    handleDelete = (id) => {
+        this.props.removeTask(id)
     }
     saveOrUpdateTask = ({ id, name, estimatedPoms, createdAt = Date.now() / 1000 }) => {
         const task = {
@@ -89,7 +92,7 @@ class TaskList extends React.Component {
                 onEdit={this.handleEditTask}
                 onSave={this.handleSaveTask}
                 onCancelEdit={this.handleCancelEdit}
-                onDelete={deleteTask}
+                onDelete={this.handleDelete}
                 onPomChange={this.handleEstimatedPomChange}
                 onTaskNameChange={this.handleTaskNameChange}
             />)
