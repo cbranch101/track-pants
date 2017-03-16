@@ -40,7 +40,9 @@ const resolvers = {
         createTask: (mutation, args, { tasks }) => {
             return tasks.insert(args.task)
         },
-        removeTask: (mutation, args, { tasks }) => tasks.remove(args.id),
+        removeTask: (mutation, args, { tasks }) => tasks.remove(args.id).then(
+            () => args.id
+        ),
         updateTask: (mutation, args, { tasks }) => {
             return tasks.update(args.id, args.task).then(
                 data => {
