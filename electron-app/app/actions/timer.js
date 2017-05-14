@@ -1,5 +1,9 @@
 import { START_TIMER, ADVANCE_TIMER, STOP_TIMER } from '../reducers/timer'
 
+export const POMODORO_DURATION = 5
+export const EARLY_COMPLETION_THRESHOLD = 3
+export const BREAK_DURATION = 2
+
 export const startTimer = (name) => ({
     type: START_TIMER,
     payload: { name }
@@ -15,11 +19,31 @@ export const stopTimer = (name) => ({
     payload: { name },
 })
 
+const getDeferred = () => {
+    const deferred = {}
+    const promise = new Promise((resolve, reject) => {
+        deferred.resolve = resolve
+        deferred.reject = reject
+    })
+    return {
+        ...deferred,
+        promise,
+    }
+}
+
 const getTimerHandler = () => {
     const timers = {}
-    const stop = (timerName) => {
-        clearInterval(timers[timerName].handler)
+    const stop = (timerName, isCompleted = false, context = {}) => {
+        const currentTimer = timers[timerName]
+        const {
+            handler,
+            deferred,
+            count
+        } = currentTimer
+        clearInterval(handler)
+        deferred.resolve({ count, isCompleted, context })
         delete timers[timerName]
+        return stopTimer(timerName)
     }
     const getTick = (timerName, stopFunc, dispatch) => () => {
         const timer = timers[timerName]
@@ -31,17 +55,19 @@ const getTimerHandler = () => {
         timers[timerName].count = newCount
         dispatch(tick(timerName, newCount))
         if (stopFunc && stopFunc(newCount)) {
-            stop(timerName)
-            dispatch(stopTimer(timerName))
+            stop(timerName, true)
         }
     }
     const start = (timerName, stopFunc) => (dispatch) => {
         const timer = setInterval(getTick(timerName, stopFunc, dispatch), 1000)
+        const deferred = getDeferred()
         timers[timerName] = {
+            deferred,
             handler: timer,
             count: 0,
         }
         dispatch(startTimer(timerName, 0))
+        return deferred.promise
     }
     return {
         startFor: (timerName, duration) => start(timerName, count => count === duration),
@@ -56,7 +82,13 @@ const {
     stop,
 } = getTimerHandler()
 
-export const startPomodoro = () => startFor('pomodoro', 30)
+export const stopPomodoro = (taskCompleted) => stop('pomodoro', false, { taskCompleted })
+
+export const startPomodoro = () => startFor('pomodoro', POMODORO_DURATION)
+
+export const stopBreak = () => stop('currentBreak')
+
+export const startBreak = () => startFor('currentBreak', BREAK_DURATION)
 
 export {
     startFor,

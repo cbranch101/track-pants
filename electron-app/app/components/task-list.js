@@ -13,6 +13,12 @@ const fragments = {
             id
             name
             estimatedPoms
+            completed
+            poms {
+                completed {
+                    id
+                }
+            }
         }
     `
 }
@@ -31,8 +37,14 @@ class TaskList extends React.Component {
     state = {
         editedTask: null,
     }
-    handleEditTask = (editedTask) => {
-        this.setState({ editedTask })
+    handleEditTask = ({ name, estimatedPoms, id }) => {
+        this.setState({
+            editedTask: {
+                name,
+                estimatedPoms,
+                id,
+            },
+        })
     }
     handleTaskNameChange = (event, value) => {
         this.setState({ editedTask: { ...this.state.editedTask, name: value } })
@@ -54,13 +66,17 @@ class TaskList extends React.Component {
     handleDelete = (id) => {
         this.props.removeTask(id)
     }
-    saveOrUpdateTask = ({ id, name, estimatedPoms, createdAt = Date.now() / 1000 }) => {
-        const task = {
-            name,
-            estimatedPoms,
-        }
+    saveOrUpdateTask = ({ id, ...task }) => {
         if (id) return this.props.updateTask(id, task)
-        return this.props.createTask({ ...task, createdAt })
+        return this.handleSubmitCreate(task)
+    }
+    handleSubmitCreate = (task) => {
+        const newTask = {
+            ...task,
+            createdAt: Date.now() / 1000,
+            completed: false,
+        }
+        return this.props.createTask(newTask)
     }
     handleSaveTask = () => {
         return this.saveOrUpdateTask(this.state.editedTask).then(

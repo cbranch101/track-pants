@@ -1,9 +1,10 @@
 import gql from 'graphql-tag'
 import { graphql } from 'react-apollo'
+import { push } from 'react-router-redux';
 import update from 'immutability-helper'
 import { connect } from 'react-redux'
-import { startPomodoro } from '../actions/timer'
 import TaskList from '../components/task-list'
+import { CurrentTasks } from '../queries'
 
 update.extend('$unset', (keysToRemove, original) => {
     const copy = Object.assign({}, original)
@@ -11,15 +12,6 @@ update.extend('$unset', (keysToRemove, original) => {
     return copy
 });
 
-
-const TaskQuery = gql`
-    query CurrentTasks {
-        taskList {
-            ...TaskList
-        }
-    }
-    ${TaskList.fragments.task}
-`
 
 const UpdateTaskMutation = gql`
     mutation UpdateTask($id: String, $task: TaskInput) {
@@ -46,8 +38,9 @@ const CreateTaskMutation = gql`
       }
     }
 `
-const withTasks = graphql(TaskQuery, {
+const withTasks = graphql(CurrentTasks, {
     props: ({ data, data: { taskList: tasks, loading, error } }) => {
+        console.log(data)
         return {
             loading,
             tasks,
@@ -110,12 +103,15 @@ const withUpdateTask = graphql(UpdateTaskMutation, {
     })
 })
 
+const startTask = (id) => push(`/tasks/${id}`)
+
 const withRedux = connect(
     (state) => ({
         pomodoro: state.timer.pomodoro,
     }),
     {
-        startTask: startPomodoro,
+        startTask,
+        push,
     }
 )
 

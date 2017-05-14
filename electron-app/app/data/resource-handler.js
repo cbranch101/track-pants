@@ -1,23 +1,27 @@
 
 
 const findById = (collection, id) => {
-    return collection.findOne({
-        _id: { $eq: id }
-    }).exec()
+    return collection.findOne(id).exec()
 }
 
 const insert = (collection, item) => collection.insert(item)
-const findAll = (collection) => collection.find().sort({ createdAt: 1 }).exec()
+const find = (collection, query = {}, sort) => {
+    const findQuery = collection.find(query)
+    const queryWithSort = sort ? findQuery.sort(sort) : findQuery
+    return queryWithSort.exec()
+}
+const findAll = (collection) => collection.find().exec()
 const update = async (collection, id, fields) => {
     const doc = await findById(collection, id)
     Object.keys(fields).forEach(
         field => doc.set(field, fields[field])
     )
     await doc.save()
-    return {
+    const returnValue = {
         ...doc,
         ...fields,
     }
+    return returnValue
 }
 
 const remove = async (collection, id) => {
@@ -32,6 +36,7 @@ const defaultMethods = {
     update,
     insert,
     remove,
+    find,
 }
 
 const ResourceHandler = () => {
@@ -46,7 +51,10 @@ const ResourceHandler = () => {
                     const resourceOption = resourceOptions[resourceName]
                     return db.collection(resourceOption.collectionName, resourceOption.schema).then(
                         collection => {
-                            const suppliedMethods = resourceOptions.methods || {}
+                            const suppliedMethods = resourceOptions.methods ?
+                                resourceOptions.methods(defaultMethods) :
+                                {}
+
                             const combinedMethods = {
                                 ...suppliedMethods,
                                 ...defaultMethods,

@@ -24,12 +24,18 @@ class TaskRow extends React.Component {
             if (e.key === 'Escape') this.props.onCancelEdit()
         }
     }
+    handleStart = () => {
+        this.props.onStart(this.props.task.id)
+    }
     render() {
         const {
             id,
             name,
-            actualPoms = 0,
-            estimatedPoms
+            poms: {
+                completed: completedPoms,
+            },
+            estimatedPoms,
+            completed,
         } = this.props.task
         const {
             onPomChange,
@@ -72,14 +78,15 @@ class TaskRow extends React.Component {
         return (
             <TableRow>
                 <TableRowColumn>{name}</TableRowColumn>
-                <TableRowColumn>{actualPoms} / {estimatedPoms}</TableRowColumn>
+                <TableRowColumn>{completedPoms.length} / {estimatedPoms}</TableRowColumn>
                 <TableRowColumn>
-                    <IconButton onClick={() => onStart(id)}>
+                    <IconButton onClick={this.handleStart}>
                         <FontIcon className="material-icons">play_arrow</FontIcon>
                     </IconButton>
-                    <IconButton onClick={() => onComplete(id)}>
+                    {completed ? <IconButton onClick={() => onComplete(id)}>
                         <FontIcon className="material-icons">check_circle</FontIcon>
-                    </IconButton>
+                    </IconButton> : null}
+
                     <IconButton onClick={() => onEdit(task)}>
                         <FontIcon className="material-icons">mode_edit</FontIcon>
                     </IconButton>

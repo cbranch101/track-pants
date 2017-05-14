@@ -1,6 +1,8 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
+import path from 'path'
 import { configureElectronStore } from './store/configureStore'
-import { getTimerHandler } from './actions/timer'
+import trayTimer from './main/tray-timer'
+
 
 let menu;
 let template;
@@ -26,7 +28,7 @@ app.on('window-all-closed', () => {
 const installExtensions = async () => {
     if (process.env.NODE_ENV === 'development') {
         const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
-
+        BrowserWindow.addDevToolsExtension('jdkknkkbebbapilgoeccciglkfbmbnfm');
         const extensions = [
             'REACT_DEVELOPER_TOOLS',
             'REDUX_DEVTOOLS'
@@ -51,8 +53,18 @@ app.on('ready', async () => {
         height: 728
     });
 
+    const iconPath = path.join(__dirname, '../resources/tray-icon.png')
+    const appIcon = new Tray(iconPath)
 
-    mainWindow.loadURL(`file://${__dirname}/app.html`);
+    store.subscribe(
+        () => {
+            const state = store.getState()
+            trayTimer(state, appIcon)
+        }
+    )
+
+
+    mainWindow.loadURL(`file://${__dirname}/app.html`)
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
