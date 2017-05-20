@@ -12,5 +12,6 @@ export default async () => {
         name: 'trackpants',
         adapter: 'websql',
     })
+
     return await resourceHandler.init(db)
 }

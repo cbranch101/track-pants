@@ -1,6 +1,5 @@
-import { expect } from 'chai'
-import timer from '../../app/reducers/timer'
-import { startTimer, tick, stopTimer } from '../../app/actions/timer'
+import timer from '../timer'
+import { startTimer, tick, stopTimer } from '../../actions/timer'
 
 describe('Timer reducer / action', () => {
     describe('on startTimer', () => {
@@ -9,7 +8,7 @@ describe('Timer reducer / action', () => {
             const expected = {
                 test: 0,
             }
-            expect(actual).to.deep.equal(expected)
+            expect(actual).toEqual(expected)
         })
     })
     describe('on tick', () => {
@@ -23,7 +22,7 @@ describe('Timer reducer / action', () => {
                 other: 1,
                 test: 1,
             }
-            expect(actual).to.deep.equal(expected)
+            expect(actual).toEqual(expected)
         })
     })
     describe('on stop', () => {
@@ -36,7 +35,7 @@ describe('Timer reducer / action', () => {
             const expected = {
                 other: 1,
             }
-            expect(actual).to.deep.equal(expected)
+            expect(actual).toEqual(expected)
         })
     })
 })
