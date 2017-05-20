@@ -8,6 +8,9 @@ export default async () => {
         global.openDatabase = require('websql')
     }
     RxDB.plugin(adapter)
-    const db = await RxDB.create('trackPantsDB', 'websql')
+    const db = await RxDB.create({
+        name: 'trackpants',
+        adapter: 'websql',
+    })
     return await resourceHandler.init(db)
 }

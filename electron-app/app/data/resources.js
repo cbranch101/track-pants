@@ -4,6 +4,7 @@ resourceHandler.add({
     name: 'tasks',
     collectionName: 'tasks4',
     schema: {
+        version: 0,
         type: 'object',
         properties: {
             createdAt: {
@@ -28,6 +29,7 @@ resourceHandler.add({
     name: 'pomodoros',
     collectionName: 'pomodoro1',
     schema: {
+        version: 0,
         type: 'object',
         properties: {
             taskID: {
