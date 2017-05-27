@@ -39,7 +39,7 @@ const defaultMethods = {
     find,
 }
 
-const ResourceHandler = () => {
+export default () => {
     const resourceOptions = {}
     return {
         add: (options) => {
@@ -90,7 +90,3 @@ const ResourceHandler = () => {
         }
     }
 }
-
-const resourceHandler = ResourceHandler()
-
-export default resourceHandler

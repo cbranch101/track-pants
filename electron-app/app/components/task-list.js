@@ -88,6 +88,7 @@ class TaskList extends React.Component {
     render() {
         const { tasks, startTask, completeTask, editTask, deleteTask, loading } = this.props
         const { editedTask } = this.state
+        console.log(tasks)
 
 
         const createNewRow = (<TableRow key={'create-new'}>

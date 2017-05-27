@@ -40,7 +40,6 @@ const CreateTaskMutation = gql`
 `
 const withTasks = graphql(CurrentTasks, {
     props: ({ data, data: { taskList: tasks, loading, error } }) => {
-        console.log(data)
         return {
             loading,
             tasks,
@@ -59,11 +58,18 @@ const withCreateTask = graphql(CreateTaskMutation, {
                 updateQueries: {
                     CurrentTasks: (prev, { mutationResult }) => {
                         const newTask = mutationResult.data.createTask
-                        return update(prev, {
+                        const updated = update(prev, {
                             taskList: {
-                                $push: [newTask],
+                                $push: [{
+                                    ...newTask,
+                                    completed: false,
+                                    poms: {
+                                        completed: [],
+                                    },
+                                }],
                             },
                         })
+                        return updated
                     },
                 },
             })

@@ -29,13 +29,6 @@ class TaskRow extends React.Component {
     }
     render() {
         const {
-            id,
-            name,
-            poms: {
-                completed: completedPoms,
-            },
-            estimatedPoms,
-            completed,
         } = this.props.task
         const {
             onPomChange,
@@ -47,8 +40,13 @@ class TaskRow extends React.Component {
             onStart,
             onComplete,
             edited,
-            task,
+            task = {}
         } = this.props
+
+        const { poms = {} } = task
+        const {
+            completed: completedPoms = []
+        } = poms
         if (edited) {
             return (<TableRow>
                 <TableRowColumn>
@@ -77,20 +75,20 @@ class TaskRow extends React.Component {
         }
         return (
             <TableRow>
-                <TableRowColumn>{name}</TableRowColumn>
-                <TableRowColumn>{completedPoms.length} / {estimatedPoms}</TableRowColumn>
+                <TableRowColumn>{task.name}</TableRowColumn>
+                <TableRowColumn>{completedPoms.length} / {task.estimatedPoms}</TableRowColumn>
                 <TableRowColumn>
                     <IconButton onClick={this.handleStart}>
                         <FontIcon className="material-icons">play_arrow</FontIcon>
                     </IconButton>
-                    {completed ? <IconButton onClick={() => onComplete(id)}>
+                    {task.completed ? <IconButton onClick={() => onComplete(id)}>
                         <FontIcon className="material-icons">check_circle</FontIcon>
                     </IconButton> : null}
 
                     <IconButton onClick={() => onEdit(task)}>
                         <FontIcon className="material-icons">mode_edit</FontIcon>
                     </IconButton>
-                    <IconButton onClick={() => onDelete(id)}>
+                    <IconButton onClick={() => onDelete(task.id)}>
                         <FontIcon className="material-icons">remove_circle</FontIcon>
                     </IconButton>
                 </TableRowColumn>

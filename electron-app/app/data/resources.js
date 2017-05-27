@@ -1,6 +1,4 @@
-import resourceHandler from './resource-handler'
-
-resourceHandler.add({
+export const tasks = {
     name: 'tasks',
     collectionName: 'tasks4',
     schema: {
@@ -23,9 +21,9 @@ resourceHandler.add({
             },
         },
     },
-})
+}
 
-resourceHandler.add({
+export const pomodoros = {
     name: 'pomodoros',
     collectionName: 'pomodoro1',
     schema: {
@@ -48,4 +46,4 @@ resourceHandler.add({
             },
         },
     },
-})
+}
