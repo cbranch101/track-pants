@@ -55,22 +55,22 @@ const withCreateTask = graphql(CreateTaskMutation, {
         createTask: (task) => {
             return mutate({
                 variables: { task },
-                updateQueries: {
-                    CurrentTasks: (prev, { mutationResult }) => {
-                        const newTask = mutationResult.data.createTask
-                        const updated = update(prev, {
-                            taskList: {
-                                $push: [{
-                                    ...newTask,
-                                    completed: false,
-                                    poms: {
-                                        completed: [],
-                                    },
-                                }],
-                            },
-                        })
-                        return updated
-                    },
+                update: (store, { data: { createTask: newTask } }) => {
+                    const current = store.readQuery({ query: CurrentTasks })
+                    const data = update(current, {
+                        taskList: {
+                            $push: [{
+                                ...newTask,
+                                __typename: 'Task',
+                                completed: false,
+                                poms: {
+                                    __typename: 'PomIndex',
+                                    completed: [],
+                                },
+                            }],
+                        },
+                    })
+                    store.writeQuery({ query: CurrentTasks, data })
                 },
             })
         }
@@ -82,17 +82,16 @@ const withRemoveTask = graphql(RemoveTaskMutation, {
         removeTask: (id) => {
             return mutate({
                 variables: { id },
-                updateQueries: {
-                    CurrentTasks: (prev, { mutationResult }) => {
-                        const removedId = mutationResult.data.removeTask
-                        return update(prev, {
-                            taskList: {
-                                $set: prev.taskList.filter(
-                                    task => task.id !== removedId
-                                )
-                            },
-                        })
-                    },
+                update: (store, { data: { removeTask: removedId } }) => {
+                    const current = store.readQuery({ query: CurrentTasks })
+                    const data = update(current, {
+                        taskList: {
+                            $set: current.taskList.filter(
+                                task => task.id !== removedId
+                            )
+                        },
+                    })
+                    store.writeQuery({ query: CurrentTasks, data })
                 },
             })
         }
