@@ -26,7 +26,8 @@ class ActiveTasksTable extends React.Component {
         tasks: PropTypes.arrayOf(propType(fragments.task)),
         loading: PropTypes.bool.isRequired,
         updateTask: PropTypes.func.isRequired,
-        startTask: PropTypes.func.isRequird,
+        startTask: PropTypes.func.isRequired,
+        backToPlanning: PropTypes.func.isRequired,
     }
     handleToggleCompleted = (task) => {
         this.props.updateTask(task.id, { completed: !task.completed })

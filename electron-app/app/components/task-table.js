@@ -5,14 +5,14 @@ import Table from './table'
 const TaskTable = ({ children, getFooter, ...props }) => {
     return (<Table selectable={false} {...props}>
         {({
-			Wrapper,
-			Header,
-			Body,
-			HeaderColumn,
-			Row,
-			RowColumn,
-			Footer,
-		}) => {
+            Wrapper,
+            Header,
+            Body,
+            HeaderColumn,
+            Row,
+            RowColumn,
+            Footer,
+        }) => {
             return (
                 <Wrapper selectable={false} {...props}>
                     <Header displaySelectAll={false} adjustForCheckbox={false}>
@@ -23,10 +23,10 @@ const TaskTable = ({ children, getFooter, ...props }) => {
                         </Row>
                     </Header>
                     {children({
-		                Row,
-		                RowColumn,
-		                Body,
-			        })}
+                        Row,
+                        RowColumn,
+                        Body,
+                    })}
                     {getFooter ?
                         <Footer displayRowCheckbox={false}>
                             <Row>
@@ -37,7 +37,7 @@ const TaskTable = ({ children, getFooter, ...props }) => {
                                 <RowColumn />
                             </Row>
                         </Footer>
-					: null}
+                        : null}
                 </Wrapper>
             )
         }}

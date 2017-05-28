@@ -32,7 +32,7 @@ PomStatus.fragments = {
 }
 
 PomStatus.propTypes = {
-    task: propType(PomStatus.fragments),
+    task: propType(PomStatus.fragments.task),
     isEdited: PropTypes.bool,
     onPomChange: PropTypes.func,
 }

@@ -10,14 +10,13 @@ const colorMap = {
     purple: purple50,
 }
 
-
 const TableRow = ({ color, ...props }) => {
     const style = color ? { backgroundColor: colorMap[color] } : {}
     return <TableRowBase {...props} style={style} />
 }
 
 TableRow.propTypes = {
-    color: PropTypes.string.isRequired,
+    color: PropTypes.string,
 }
 
 export default TableRow

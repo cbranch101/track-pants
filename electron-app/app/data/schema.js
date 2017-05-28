@@ -74,7 +74,6 @@ const resolvers = {
             const search = { taskID: task._id }
             const sort = { createdAt: 1 }
             return pomodoros.find(search, sort).then(indexPoms).then(pomsByType => {
-                console.log(pomsByType)
                 const interruptedCount = pomsByType.interrupted.length
                 const completedCount = pomsByType.completed.length
                 return {

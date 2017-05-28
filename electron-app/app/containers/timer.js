@@ -1,12 +1,10 @@
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
-import update from 'immutability-helper'
 import gql from 'graphql-tag'
 import Timer from '../components/timer'
 import { SelectedTask } from '../queries'
 import { startPomodoro, stopPomodoro, startBreak, stopBreak } from '../actions/timer'
-
 
 const withTask = graphql(SelectedTask, {
     options: ({ params }) => {
@@ -16,7 +14,7 @@ const withTask = graphql(SelectedTask, {
     props: ({ data: { task, loading } }) => {
         return {
             loading,
-            task,
+            task
         }
     }
 })
@@ -44,7 +42,7 @@ const withUpdateTask = graphql(UpdateTaskMutation, {
     props: ({ mutate }) => ({
         updateTask: (id, task) => {
             return mutate({
-                variables: { id, task },
+                variables: { id, task }
             })
         }
     })
@@ -52,10 +50,10 @@ const withUpdateTask = graphql(UpdateTaskMutation, {
 
 const withCreatePom = graphql(CreatePomMutation, {
     props: ({ mutate }) => ({
-        createPom: (pom) => {
+        createPom: pom => {
             return mutate({
                 variables: { pom },
-                refetchQueries: ['CurrentTasks', 'SelectedTask'],
+                refetchQueries: ['CurrentTasks', 'SelectedTask']
             })
         }
     })
@@ -64,17 +62,17 @@ const withCreatePom = graphql(CreatePomMutation, {
 const backToList = () => push('/active-tasks')
 
 const withRedux = connect(
-    (state) => ({
-        timer: state.timer,
+    state => ({
+        timer: state.timer
     }),
     {
         startPomodoro,
-        stopPomodoro: (isCompleted) => {
+        stopPomodoro: isCompleted => {
             return stopPomodoro(isCompleted)
         },
         startBreak,
         stopBreak,
-        backToList,
+        backToList
     }
 )
 

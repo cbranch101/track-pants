@@ -5,8 +5,8 @@ import {
     TableHeader as Header,
     TableHeaderColumn as HeaderColumn,
     TableRowColumn as RowColumn,
-    TableFooter as Footer,
-} from 'material-ui/Table';
+    TableFooter as Footer
+} from 'material-ui/Table'
 
 import Row from './table-row'
 
@@ -18,12 +18,12 @@ const Table = ({ children }) => {
         HeaderColumn,
         Row,
         Footer,
-        RowColumn,
+        RowColumn
     })
 }
 
 Table.propTypes = {
-    children: PropTypes.func.isRequired,
+    children: PropTypes.func.isRequired
 }
 
 export default Table

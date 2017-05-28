@@ -10,19 +10,28 @@ const getContext = buildGetContext()
 
 const graphQLServer = express()
 
-graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress(() => {
-    return getContext().then(
-        context => ({
+graphQLServer.use(
+    '/graphql',
+    bodyParser.json(),
+    graphqlExpress(() => {
+        return getContext().then(context => ({
             schema: Schema,
             context,
-            formatError: (err) => { console.log(err.stack); return err }
+            formatError: err => {
+                console.log(err.stack)
+                return err
+            }
         }))
-}))
+    })
+)
 
-graphQLServer.use('/graphiql', graphiqlExpress({
-    endpointURL: '/graphql',
-}))
+graphQLServer.use(
+    '/graphiql',
+    graphiqlExpress({
+        endpointURL: '/graphql'
+    })
+)
 
-graphQLServer.listen(GRAPHQL_PORT, () => console.log(
-  `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`
-))
+graphQLServer.listen(GRAPHQL_PORT, () =>
+    console.log(`GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`)
+)

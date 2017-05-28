@@ -1,10 +1,9 @@
 // @flow
 import React from 'react'
 import { Route, IndexRedirect } from 'react-router'
-import App from './containers/App'
+import App from './components/app'
 import Tasks from './containers/tasks'
 import ActiveTasks from './containers/active-tasks'
-import CreateTask from './containers/create-task'
 import Timer from './containers/timer'
 
 export default (
