@@ -1,7 +1,9 @@
-import { configure } from '@kadira/storybook';
+import { configure } from '@kadira/storybook'
+import injectTapEventPlugin from 'react-tap-event-plugin'
 
 function loadStories() {
-  require('../stories');
+    injectTapEventPlugin()
+    require('../stories')
 }
 
-configure(loadStories, module);
+configure(loadStories, module)
