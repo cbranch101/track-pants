@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf, action } from '@kadira/storybook';
 
-import ActiveTasks from '../app/components/active-tasks'
+import ActiveTasks from '../app/components/active-tasks-table'
 
 storiesOf('ActiveTasks', module)
   .add('Basic Configuration', () => {
@@ -18,5 +18,8 @@ storiesOf('ActiveTasks', module)
               actualPoms: 2,
           },
       ]
-      return (<ActiveTasks />)
+      return (<ActiveTasks
+          tasks={tasks}
+          loading={false}
+      />)
   })

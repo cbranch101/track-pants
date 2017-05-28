@@ -61,7 +61,7 @@ const withCreatePom = graphql(CreatePomMutation, {
     })
 })
 
-const backToList = () => push('/tasks')
+const backToList = () => push('/active-tasks')
 
 const withRedux = connect(
     (state) => ({

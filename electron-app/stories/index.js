@@ -5,4 +5,5 @@ addDecorator(materialUIDecorator)
 
 require('./task-list')
 require('./timer')
-require('./active-tasks')
+require('./active-tasks-table')
+require('./all-task-table')

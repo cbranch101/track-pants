@@ -2,7 +2,7 @@ export const tasks = {
     name: 'tasks',
     collectionName: 'tasks4',
     schema: {
-        version: 0,
+        version: 1,
         type: 'object',
         properties: {
             createdAt: {
@@ -19,7 +19,18 @@ export const tasks = {
             estimatedPoms: {
                 type: 'integer',
             },
+            active: {
+                type: 'boolean',
+            },
         },
+    },
+    migrationStrategies: {
+        1: (doc) => {
+            return {
+                ...doc,
+                active: false,
+            }
+        }
     },
 }
 

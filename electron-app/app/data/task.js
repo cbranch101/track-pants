@@ -4,9 +4,16 @@ export default `
         estimatedPoms: Int
         createdAt: Int
         completed: Boolean
+        active: Boolean
     }
     # A single tracked task.  Pomodoros will be assigned to this
-    type PomIndex {
+    type PomResults {
+        byType: PomsByType
+        completedCount: Int!
+        interruptedCount: Int!
+        anyRecorded: Boolean!
+    }
+    type PomsByType {
         completed: [Pom]
         interrupted: [Pom]
     }
@@ -16,7 +23,8 @@ export default `
         id: String
         # All tasks must have a pomodoro estimate before beginning
         estimatedPoms: Int!
-        poms: PomIndex
+        poms: PomResults
         completed: Boolean
+        active: Boolean!
     }
 `

@@ -1,17 +1,17 @@
 import gql from 'graphql-tag'
-import TaskList from './components/task-list'
+import AllTasksTable from './components/all-tasks-table'
 import Timer from './components/timer'
 
 
 export const CurrentTasks = gql`
     query CurrentTasks {
         taskList {
-            ...TaskList
             ...TimerTask
+            ...AllTasksTable
         }
     }
     ${Timer.fragments.task}
-    ${TaskList.fragments.task}
+    ${AllTasksTable.fragments.task}
 `
 
 export const SelectedTask = gql`

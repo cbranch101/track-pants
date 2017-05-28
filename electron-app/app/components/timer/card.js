@@ -79,7 +79,7 @@ const TimerCard = (props) => {
     return (<Card>
         <CardHeader
             title={task.name}
-            subtitle={`Estimated: ${task.estimatedPoms}, Actual: ${task.poms.completed.length}`}
+            subtitle={`Estimated: ${task.estimatedPoms}, Actual: ${task.poms.completedCount}`}
         />
         <TimerText timerStep={timerStep} timer={timer} />
         <Buttons
@@ -100,9 +100,7 @@ TimerCard.fragments = {
             name
             estimatedPoms
             poms {
-                completed {
-                    id
-                }
+                completedCount
             }
             completed
         }

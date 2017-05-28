@@ -3,25 +3,15 @@ import { graphql } from 'react-apollo'
 import { push } from 'react-router-redux';
 import update from 'immutability-helper'
 import { connect } from 'react-redux'
-import TaskList from '../components/task-list'
+import AllTasksTable from '../components/all-tasks-table'
 import { CurrentTasks } from '../queries'
+import { UpdateTask } from '../mutations'
 
 update.extend('$unset', (keysToRemove, original) => {
     const copy = Object.assign({}, original)
     for (const key of keysToRemove) delete copy[key]
     return copy
 });
-
-
-const UpdateTaskMutation = gql`
-    mutation UpdateTask($id: String, $task: TaskInput) {
-      updateTask(id:$id, task:$task) {
-        id,
-        name
-        estimatedPoms
-      }
-    }
-`
 
 const RemoveTaskMutation = gql`
     mutation DeleteTask($id: String) {
@@ -40,6 +30,7 @@ const CreateTaskMutation = gql`
 `
 const withTasks = graphql(CurrentTasks, {
     props: ({ data, data: { taskList: tasks, loading, error } }) => {
+        console.log(error)
         return {
             loading,
             tasks,
@@ -67,6 +58,7 @@ const withCreateTask = graphql(CreateTaskMutation, {
                                     __typename: 'PomIndex',
                                     completed: [],
                                 },
+                                active: false,
                             }],
                         },
                     })
@@ -98,7 +90,7 @@ const withRemoveTask = graphql(RemoveTaskMutation, {
     })
 })
 
-const withUpdateTask = graphql(UpdateTaskMutation, {
+const withUpdateTask = graphql(UpdateTask, {
     props: ({ mutate }) => ({
         updateTask: (id, task) => {
             return mutate({
@@ -108,17 +100,17 @@ const withUpdateTask = graphql(UpdateTaskMutation, {
     })
 })
 
-const startTask = (id) => push(`/tasks/${id}`)
+const startWorking = () => push('/active-tasks')
 
 const withRedux = connect(
     (state) => ({
         pomodoro: state.timer.pomodoro,
     }),
     {
-        startTask,
+        startWorking,
         push,
     }
 )
 
 
-export default withRedux(withUpdateTask(withRemoveTask(withCreateTask(withTasks(TaskList)))))
+export default withRedux(withUpdateTask(withRemoveTask(withCreateTask(withTasks(AllTasksTable)))))

@@ -52,6 +52,7 @@ export default () => {
                     return db.collection({
                         name: resourceOption.collectionName,
                         schema: resourceOption.schema,
+                        migrationStrategies: resourceOption.migrationStrategies,
                     }).then(
                         collection => {
                             const suppliedMethods = resourceOptions.methods ?

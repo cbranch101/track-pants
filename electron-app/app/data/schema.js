@@ -73,7 +73,17 @@ const resolvers = {
         poms: (task, args, { pomodoros }) => {
             const search = { taskID: task._id }
             const sort = { createdAt: 1 }
-            return pomodoros.find(search, sort).then(indexPoms)
+            return pomodoros.find(search, sort).then(indexPoms).then(pomsByType => {
+                console.log(pomsByType)
+                const interruptedCount = pomsByType.interrupted.length
+                const completedCount = pomsByType.completed.length
+                return {
+                    byType: pomsByType,
+                    interruptedCount,
+                    completedCount,
+                    anyRecorded: interruptedCount > 0 || completedCount > 0,
+                }
+            })
         },
     },
     Mutation: {

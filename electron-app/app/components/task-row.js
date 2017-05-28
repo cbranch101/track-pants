@@ -4,6 +4,8 @@ import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton'
+import { green50 } from 'material-ui/styles/colors'
+
 
 class TaskRow extends React.Component {
     static propTypes = {
@@ -74,7 +76,11 @@ class TaskRow extends React.Component {
             </TableRow>)
         }
         return (
-            <TableRow>
+            <TableRow
+                style={{
+                    backgroundColor: green50,
+                }}
+            >
                 <TableRowColumn>{task.name}</TableRowColumn>
                 <TableRowColumn>{completedPoms.length} / {task.estimatedPoms}</TableRowColumn>
                 <TableRowColumn>
