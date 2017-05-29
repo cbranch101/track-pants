@@ -7,7 +7,8 @@ const AllTasksTableFooter = ({
     onSubmitEdit,
     onCancelEdit,
     isEdited,
-    onStartWorking
+    onStartWorking,
+    onBackToSummary,
 }) => {
     if (isEdited) {
         return (
@@ -19,6 +20,7 @@ const AllTasksTableFooter = ({
     }
     return (
         <div>
+            <FlatButton onClick={onBackToSummary}>Back To Summary</FlatButton>
             <FlatButton onClick={onCreate}>Create New Task</FlatButton>
             {onStartWorking
                 ? <FlatButton onClick={onStartWorking}>Start Working</FlatButton>
@@ -34,6 +36,7 @@ AllTasksTableFooter.propTypes = {
     onCancelEdit: PropTypes.func.isRequired,
     isEdited: PropTypes.bool.isRequired,
     onStartWorking: PropTypes.func,
+    onBackToSummary: PropTypes.func.isRequired,
 }
 
 

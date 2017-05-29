@@ -1,11 +1,13 @@
 import { makeExecutableSchema } from 'graphql-tools'
+
 import Task from './task'
 import Pom from './pom'
+
 
 const RootQuery = `
     type Query {
         # get all tasks
-        taskList : [Task]
+        taskList: [Task]
         task(id: String): Task
     }
 `
@@ -25,7 +27,6 @@ const SchemaDefinition = `
         mutation: Mutation,
     }
 `
-
 const indexPoms = (poms) => {
     return poms.reduce(
         (memo, pom) => {

@@ -53,10 +53,17 @@ const withCreateTask = graphql(CreateTaskMutation, {
                                     __typename: 'Task',
                                     completed: false,
                                     poms: {
-                                        __typename: 'PomIndex',
-                                        completed: []
+                                        __typename: 'PomResults',
+                                        completedCount: 0,
+                                        interruptedCount: 0,
+                                        anyRecorded: false,
+                                        byType: {
+                                            __typename: 'PomsByType',
+                                            completed: []
+                                        },
                                     },
-                                    active: false
+                                    active: false,
+                                    archived: false
                                 }
                             ]
                         }
@@ -98,6 +105,7 @@ const withUpdateTask = graphql(UpdateTask, {
 })
 
 const startWorking = () => push('/active-tasks')
+const backToSummary = () => push('/time-summary')
 
 const withRedux = connect(
     state => ({
@@ -105,6 +113,7 @@ const withRedux = connect(
     }),
     {
         startWorking,
+        backToSummary,
         push
     }
 )

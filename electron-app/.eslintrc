@@ -17,6 +17,7 @@
     "no-underscore-dangle": "off",
     "no-nested-ternary": "off",
     "indent": ["error", 4],
+    "no-mixed-operators": "off",
     "react/jsx-indent": ["error", 4],
     "react/jsx-indent-props": ["error", 4],
     "arrow-body-style": "off",

@@ -15,10 +15,6 @@ injectTapEventPlugin()
 
 const store = configureStore()
 
-// ipcRenderer.on('redux-action', (event, payload) => {
-//     store.dispatch(payload);
-// });
-
 const history = syncHistoryWithStore(hashHistory, store)
 render(
     <ApolloProvider client={client} store={store}>

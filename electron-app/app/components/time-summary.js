@@ -1,131 +1,98 @@
 import React from 'react'
-import { List, ListItem } from 'material-ui/List'
-import DoneIcon from 'material-ui/svg-icons/action/check-circle'
-import FontIcon from 'material-ui/FontIcon'
-import { green200, red200 } from 'material-ui/styles/colors'
+import PropTypes from 'prop-types'
+import { List } from 'material-ui/List'
 import moment from 'moment'
-import _ from 'lodash'
+import gql from 'graphql-tag'
+import { propType } from 'graphql-anywhere'
+import RaisedButton from 'material-ui/RaisedButton'
+import {
+    timeStampToDateString,
+    dateStringToMoment,
+} from '../utils/time'
 
-const CompletedIcon = () => (
-    <FontIcon className="material-icons" color={green200}>check_box</FontIcon>
-)
-const ExtraIcon = () => <FontIcon className="material-icons" color={red200}>check_box</FontIcon>
-const IncompleteIcon = () => <FontIcon className="material-icons">check_box_outline_blank</FontIcon>
+import DaySummary from './time-summary/day-summary'
 
-const addItemNTimes = (n, array, item) => {
-    const runArray = _.fill(Array(n), 2)
-    runArray.forEach(() => array.push(item))
-    return array
-}
+const convertTasksToDays = tasks => {
+    const indexedTasks = tasks.reduce((memo, task) => {
+        memo[task.id] = task
+        return memo
+    }, {})
 
-const getPomIcons = task => {
-    const iconArray = []
-    const { completedCount } = task.poms
-    const { estimatedPoms: estimatedCount } = task
-    if (completedCount > 0) {
-        const itemsToAdd = completedCount > estimatedCount ? estimatedCount : completedCount
-        addItemNTimes(itemsToAdd, iconArray, CompletedIcon)
-    }
-    if (completedCount < estimatedCount) {
-        addItemNTimes(estimatedCount - completedCount, iconArray, IncompleteIcon)
-    }
-    if (completedCount > estimatedCount) {
-        addItemNTimes(completedCount - estimatedCount, iconArray, ExtraIcon)
-    }
-    return iconArray
-}
-
-const formatAsClockTime = time => moment(time).format('HH:mm')
-
-const getHoursAndMinutes = seconds => {
-    const hours = Math.floor(seconds / (60 * 60))
-    const remainingMinutes = Math.floor((seconds - hours * 60 * 60) / 60)
-    const minuteString = `${remainingMinutes} mins`
-    const hourDescription = hours === 1 ? 'hour' : 'hours'
-    return hours > 0 ? `${hours} ${hourDescription} ${minuteString}` : minuteString
-}
-
-const getTotalTime = tasks => {
-    return tasks.reduce((memo, task) => {
-        const newValue = memo + task.duration
-        return newValue
-    }, 0)
-}
-
-const getTimeData = (task, dayValue) => {
-    const currentDay = moment(dayValue)
-    const pomsForToday = task.poms.byType.completed.filter(pom =>
-        currentDay.isSame(moment(pom.createdAt), 'day')
-    )
-    if (pomsForToday.length === 0) return undefined
-    const lastTask = pomsForToday[pomsForToday.length - 1]
-    return {
-        minTime: formatAsClockTime(pomsForToday[0].createdAt),
-        maxTime: formatAsClockTime(lastTask.createdAt + lastTask.duration * 1000),
-        totalTime: getTotalTime(pomsForToday),
-    }
-}
-
-const getPomTotals = (day) => {
-    return day.tasks.reduce(
-        (memo, task) => {
-            const timeData = getTimeData(task, day.value)
-            const totalTime = timeData ? timeData.totalTime : 0
-            return {
-                estimated: memo.estimated + task.estimatedPoms,
-                completed: memo.completed + task.poms.completedCount,
-                duration: memo.duration + totalTime,
-            }
-        },
-        {
-            estimated: 0,
-            completed: 0,
-            duration: 0,
+    const lastDayByTaskID = tasks.reduce((memo, task) => {
+        const { completed } = task.poms.byType
+        if (completed.length === 0) {
+            return memo
         }
-    )
-}
-
-const DaySummary = ({ day }) => {
-    const pomTotals = getPomTotals(day)
-    const formattedDayValue = moment(day.value).format('MMMM Do YYYY')
-    return (
-        <ListItem
-            primaryText={`${formattedDayValue} (${getHoursAndMinutes(pomTotals.duration)})`}
-            secondaryText={`Estimated: ${pomTotals.estimated}, Completed: ${pomTotals.completed}`}
-            initiallyOpen
-            primaryTogglesNestedList
-            nestedItems={day.tasks.map(task => {
-                const timeData = getTimeData(task, day.value)
-                return (
-                    <ListItem
-                        leftIcon={task.completed ? <DoneIcon color={green200} /> : undefined}
-                        key={task.id}
-                        primaryText={`${task.name} ${timeData.minTime} - ${timeData.maxTime} (${getHoursAndMinutes(timeData.totalTime)})`}
-                        secondaryText={
-                            <p>
-                                <span>
-                                    {getPomIcons(task).map((Icon, index) => {
-                                        return <Icon key={index} />
-                                    })}
-                                </span>
-                            </p>
+        const lastTime = completed[completed.length - 1].createdAt
+        memo[task.id] = timeStampToDateString(lastTime)
+        return memo
+    }, {})
+    const tasksByDay = tasks.reduce((memo, task) => {
+        task.poms.byType.completed.forEach(pom => {
+            const dayString = timeStampToDateString(pom.createdAt)
+            if (!memo[dayString]) {
+                memo[dayString] = []
+            }
+            if (!memo[dayString].includes(task.id)) {
+                memo[dayString].push(task.id)
+            }
+        })
+        return memo
+    }, {})
+    return Object.keys(tasksByDay)
+        .map(dayString => {
+            const taskIDs = tasksByDay[dayString]
+            return {
+                value: dayString,
+                tasks: taskIDs.map(id => {
+                    const task = indexedTasks[id]
+                    if (lastDayByTaskID[id] !== dayString) {
+                        return {
+                            ...task,
+                            completed: false
                         }
-                        secondaryTextLines={2}
-                    />
-                )
-            })}
-        />
-    )
+                    }
+                    return task
+                })
+            }
+        })
+        .sort((a, b) => dateStringToMoment(b.value).valueOf() - dateStringToMoment(a.value).valueOf())
 }
 
-const TimeSummary = ({ days }) => {
+const TimeSummary = ({ tasks, startPlanning, loading }) => {
+    if(loading) return <div>Loading</div>
+    const days = convertTasksToDays(tasks)
     return (
-        <List>
-            {days.map(day => <DaySummary key={day.value} day={day} />)}
-        </List>
+        <div>
+            <List>
+                {days.map(day => <DaySummary key={day.value} day={day} />)}
+            </List>
+            <RaisedButton primary onClick={startPlanning}>Start Planning</RaisedButton>
+        </div>
     )
 }
 
-TimeSummary.propTypes = {}
+TimeSummary.fragments = {
+    task: gql`
+        fragment TimeSummary_task on Task {
+            id
+            poms {
+                byType {
+                    completed {
+                        createdAt
+                    }
+                }
+            }
+            ...DaySummary_task
+        }
+        ${DaySummary.fragments.task}
+    `
+}
+
+TimeSummary.propTypes = {
+    tasks: PropTypes.arrayOf(propType(TimeSummary.fragments.task)),
+    startPlanning: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+}
 
 export default TimeSummary

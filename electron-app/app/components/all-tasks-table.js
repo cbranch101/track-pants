@@ -8,6 +8,9 @@ import ClickableIcon from './clickable-icon'
 import TaskName from './task-name'
 import Footer from './all-tasks-table/footer'
 import PomStatus from './pom-status'
+import {
+    getCurrentTimestamp
+} from '../utils/time'
 
 const fragments = {
     task: gql`
@@ -16,6 +19,7 @@ const fragments = {
             name
             completed
             active
+            archived
             poms {
                 anyRecorded
             }
@@ -34,6 +38,7 @@ class AllTasksTable extends React.Component {
         removeTask: PropTypes.func.isRequired,
         createTask: PropTypes.func.isRequired,
         startWorking: PropTypes.func.isRequired,
+        backToSummary: PropTypes.func.isRequired,
     }
     static fragments = fragments
     state = {
@@ -79,13 +84,20 @@ class AllTasksTable extends React.Component {
             active: !active,
         })
     }
-    handleDelete = (id) => {
-        this.props.removeTask(id)
+    handleDelete = (task) => {
+        if (task.poms.anyRecorded) {
+            this.props.updateTask(task.id, {
+                archived: true,
+                active: false,
+            })
+        } else {
+            this.props.removeTask(task.id)
+        }
     }
     handleSubmitCreate = (task) => {
         const newTask = {
             ...task,
-            createdAt: Date.now() / 1000,
+            createdAt: getCurrentTimestamp(),
             completed: false,
             active: false,
         }
@@ -124,7 +136,7 @@ class AllTasksTable extends React.Component {
                     {this.state.editedTask === null ?
                         <div>
                             <ClickableIcon disabled={task.poms.anyRecorded} name="mode_edit" onClick={() => this.handleEditTask(task)} />
-                            <ClickableIcon name="remove_circle" onClick={() => this.handleDelete(task.id)} />
+                            <ClickableIcon name="remove_circle" onClick={() => this.handleDelete(task)} />
                             <ClickableIcon name={task.active ? 'alarm_off' : 'alarm_add'} onClick={() => this.handleToggleActiveTask(task)} />
                         </div>
                         : null
@@ -156,13 +168,16 @@ class AllTasksTable extends React.Component {
                             ? this.props.startWorking
                             : undefined
                     }
+                    onBackToSummary={this.props.backToSummary}
                 />)
             }}
         >
             {({ Body, Row, RowColumn }) => {
                 return (
                     <Body displayRowCheckbox={false}>
-                        {allTasks.map((task) => this.renderRow(task, Row, RowColumn))}
+                        {allTasks.filter(task => !task.archived)
+                            .map((task) => this.renderRow(task, Row, RowColumn))
+                        }
                     </Body>
                 )
             }}

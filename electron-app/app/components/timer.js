@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { propType } from 'graphql-anywhere'
 import gql from 'graphql-tag'
 import { POMODORO_DURATION, EARLY_COMPLETION_THRESHOLD } from '../actions/timer'
+import { getCurrentTimestamp } from '../utils/time'
 
 import TimerCard from './timer/card'
 
@@ -44,7 +45,7 @@ class Timer extends React.Component {
     }
     handlePomComplete = ({ count, isCompleted, context: { taskCompleted = false } }) => {
         const newPom = {
-            createdAt: Date.now() / 1000,
+            createdAt: getCurrentTimestamp(),
             interrupted: !isCompleted,
             taskID: this.props.task.id,
             duration: count,

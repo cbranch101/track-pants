@@ -2,7 +2,7 @@ export const tasks = {
     name: 'tasks',
     collectionName: 'tasks4',
     schema: {
-        version: 1,
+        version: 2,
         type: 'object',
         properties: {
             createdAt: {
@@ -22,6 +22,9 @@ export const tasks = {
             active: {
                 type: 'boolean',
             },
+            archived: {
+                type: 'boolean',
+            },
         },
     },
     migrationStrategies: {
@@ -30,7 +33,14 @@ export const tasks = {
                 ...doc,
                 active: false,
             }
-        }
+        },
+        2: (doc) => {
+            return {
+                ...doc,
+                archived: false,
+            }
+        },
+
     },
 }
 
@@ -57,4 +67,5 @@ export const pomodoros = {
             },
         },
     },
+
 }

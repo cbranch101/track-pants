@@ -7,7 +7,8 @@ import ClickableIcon from './clickable-icon'
 
 const PomStatus = ({ task, isEdited = false, onPomChange }) => {
     const { estimatedPoms } = task
-    const { completedCount } = task.poms
+    const { poms = {} } = task
+    const { completedCount } = poms
     if (isEdited) {
         return (
             <span>

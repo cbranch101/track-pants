@@ -5,6 +5,7 @@ export default `
         createdAt: Int
         completed: Boolean
         active: Boolean
+        archived: Boolean
     }
     # A single tracked task.  Pomodoros will be assigned to this
     type PomResults {
@@ -26,5 +27,6 @@ export default `
         poms: PomResults
         completed: Boolean
         active: Boolean!
+        archived: Boolean
     }
 `
