@@ -5,10 +5,7 @@ import { green200 } from 'material-ui/styles/colors'
 import { ListItem } from 'material-ui/List'
 import gql from 'graphql-tag'
 import { propType } from 'graphql-anywhere'
-import {
-    formatAsClockTime,
-    isOnDay,
-} from '../../utils/time'
+import { formatAsClockTime, isOnDay } from '../../utils/time'
 
 import PomStatusIcons from './pom-status-icons'
 
@@ -27,21 +24,18 @@ const getTotalTime = tasks => {
     }, 0)
 }
 
-
 const getTimeData = (task, dayValue) => {
-    const pomsForToday = task.poms.byType.completed.filter(pom =>
-        isOnDay(pom.createdAt, dayValue)
-    )
+    const pomsForToday = task.poms.byType.completed.filter(pom => isOnDay(pom.createdAt, dayValue))
     if (pomsForToday.length === 0) return undefined
     const lastPom = pomsForToday[pomsForToday.length - 1]
     return {
         minTime: formatAsClockTime(pomsForToday[0].createdAt),
         maxTime: formatAsClockTime(lastPom.createdAt + lastPom.duration),
-        totalTime: getTotalTime(pomsForToday),
+        totalTime: getTotalTime(pomsForToday)
     }
 }
 
-const getPomTotals = (day) => {
+const getPomTotals = day => {
     return day.tasks.reduce(
         (memo, task) => {
             const timeData = getTimeData(task, day.value)
@@ -49,13 +43,13 @@ const getPomTotals = (day) => {
             return {
                 estimated: memo.estimated + task.estimatedPoms,
                 completed: memo.completed + task.poms.completedCount,
-                duration: memo.duration + totalTime,
+                duration: memo.duration + totalTime
             }
         },
         {
             estimated: 0,
             completed: 0,
-            duration: 0,
+            duration: 0
         }
     )
 }
@@ -64,7 +58,7 @@ const DaySummary = ({ day }) => {
     const pomTotals = getPomTotals(day)
     return (
         <ListItem
-            primaryText={`${day.value} (${getHoursAndMinutes(pomTotals.duration)})`}
+            primaryText={`${day.value} (Tracked: ${getHoursAndMinutes(pomTotals.duration)} mins Untracked: ${day.untracked} mins)`}
             secondaryText={`Estimated: ${pomTotals.estimated}, Completed: ${pomTotals.completed}`}
             initiallyOpen
             primaryTogglesNestedList
@@ -107,7 +101,8 @@ DaySummary.fragments = {
 DaySummary.propTypes = {
     day: PropTypes.shape({
         value: PropTypes.string.isRequired,
-        tasks: PropTypes.arrayOf(propType(DaySummary.fragments.task)).isRequired,
+        untracked: PropTypes.number.isRequired,
+        tasks: PropTypes.arrayOf(propType(DaySummary.fragments.task)).isRequired
     })
 }
 

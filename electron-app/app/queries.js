@@ -3,13 +3,15 @@ import AllTasksTable from './components/all-tasks-table'
 import Timer from './components/timer'
 import TimeSummary from './components/time-summary'
 
-
 export const CurrentTasks = gql`
-    query CurrentTasks($includeArchived: Boolean) {
-        taskList(includeArchived: $includeArchived) {
-            ...TimerTask
-            ...AllTasksTable
-            ...TimeSummary_task
+    query CurrentTasks($first: Int, $after: String) {
+        taskList(first: $first, after: $after) {
+            results {
+                ...TimerTask
+                ...AllTasksTable
+                ...TimeSummary_task
+            }
+            hasMore
         }
     }
     ${Timer.fragments.task}

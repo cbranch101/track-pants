@@ -2,8 +2,8 @@ import { graphql } from 'react-apollo'
 import { push } from 'react-router-redux'
 import { connect } from 'react-redux'
 import ActiveTasksTable from '../components/active-tasks-table'
-import { CurrentTasks } from '../queries'
 import { UpdateTask } from '../mutations'
+import { withTasks } from '../enhancers'
 
 const withUpdateTask = graphql(UpdateTask, {
     props: ({ mutate }) => ({
@@ -15,15 +15,6 @@ const withUpdateTask = graphql(UpdateTask, {
     })
 })
 
-const withTasks = graphql(CurrentTasks, {
-    props: ({ data: { taskList: tasks, loading, error } }) => {
-        if (error) throw new Error(error)
-        return {
-            loading,
-            tasks
-        }
-    }
-})
 const backToPlanning = () => push('/tasks')
 const startTask = id => push(`/tasks/${id}`)
 

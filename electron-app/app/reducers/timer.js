@@ -8,22 +8,22 @@ export default (state = {}, action) => {
     case START_TIMER: {
         return {
             ...state,
-            [payload.name]: 0,
+            [payload.name]: payload.value
         }
     }
 
     case ADVANCE_TIMER: {
         return {
             ...state,
-            [payload.name]: payload.value,
+            [payload.name]: payload.value
         }
     }
 
     case STOP_TIMER: {
         const {
-            [payload.name]: removed, // eslint-disable-line no-unused-vars
-            ...cleanedState
-        } = state
+                [payload.name]: removed, // eslint-disable-line no-unused-vars
+                ...cleanedState
+            } = state
         return cleanedState
     }
 

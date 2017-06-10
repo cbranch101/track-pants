@@ -1,5 +1,3 @@
-
-
 const findById = (collection, id) => {
     return collection.findOne(id).exec()
 }
@@ -10,16 +8,14 @@ const find = (collection, query = {}, sort) => {
     const queryWithSort = sort ? findQuery.sort(sort) : findQuery
     return queryWithSort.exec()
 }
-const findAll = (collection) => collection.find().exec()
+const findAll = collection => collection.find().exec()
 const update = async (collection, id, fields) => {
     const doc = await findById(collection, id)
-    Object.keys(fields).forEach(
-        field => doc.set(field, fields[field])
-    )
+    Object.keys(fields).forEach(field => doc.set(field, fields[field]))
     await doc.save()
     const returnValue = {
         ...doc,
-        ...fields,
+        ...fields
     }
     return returnValue
 }
@@ -36,57 +32,49 @@ const defaultMethods = {
     update,
     insert,
     remove,
-    find,
+    find
 }
 
 export default () => {
     const resourceOptions = {}
     return {
-        add: (options) => {
+        add: options => {
             resourceOptions[options.name] = options
         },
-        init: (db) => {
-            const promises = Object.keys(resourceOptions).map(
-                (resourceName) => {
-                    const resourceOption = resourceOptions[resourceName]
-                    return db.collection({
+        init: db => {
+            const promises = Object.keys(resourceOptions).map(resourceName => {
+                const resourceOption = resourceOptions[resourceName]
+                return db
+                    .collection({
                         name: resourceOption.collectionName,
                         schema: resourceOption.schema,
-                        migrationStrategies: resourceOption.migrationStrategies,
-                    }).then(
-                        collection => {
-                            const suppliedMethods = resourceOptions.methods ?
-                                resourceOptions.methods(defaultMethods) :
-                                {}
+                        migrationStrategies: resourceOption.migrationStrategies
+                    })
+                    .then(collection => {
+                        const suppliedMethods = resourceOptions.methods
+                            ? resourceOptions.methods(defaultMethods)
+                            : {}
 
-                            const combinedMethods = {
-                                ...suppliedMethods,
-                                ...defaultMethods,
-                            }
-                            const resource = Object.keys(combinedMethods).reduce(
-                                (memo, methodName) => {
-                                    const method = combinedMethods[methodName]
-                                    memo[methodName] = (...args) => method(collection, ...args)
-                                    return memo
-                                },
-                                {},
-                            )
-                            return {
-                                name: resourceName,
-                                resource,
-                            }
+                        const combinedMethods = {
+                            ...suppliedMethods,
+                            ...defaultMethods
                         }
-                    )
-                }
-            )
-            return Promise.all(promises).then(
-                resources => resources.reduce(
-                    (memo, resource) => {
-                        memo[resource.name] = resource.resource
-                        return memo
-                    },
-                    {},
-                )
+                        const resource = Object.keys(combinedMethods).reduce((memo, methodName) => {
+                            const method = combinedMethods[methodName]
+                            memo[methodName] = (...args) => method(collection, ...args)
+                            return memo
+                        }, {})
+                        return {
+                            name: resourceName,
+                            resource
+                        }
+                    })
+            })
+            return Promise.all(promises).then(resources =>
+                resources.reduce((memo, resource) => {
+                    memo[resource.name] = resource.resource
+                    return memo
+                }, {})
             )
         }
     }

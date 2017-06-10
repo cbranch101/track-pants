@@ -10,6 +10,7 @@ export const UpdateTask = gql`
         estimatedPoms,
         active,
         completed,
+        archived,
       }
     }
 `

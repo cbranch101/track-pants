@@ -3,19 +3,23 @@ import { getTimeString } from '../utils/time'
 
 let appIconShown = false
 
-const getCurrentTimeString = (state) => {
+const getCurrentTimeString = state => {
     const {
         timer: {
             pomodoro: secondsIntoPomodoro,
             currentBreak: secondsIntoBreak,
+            untracked: untrackedSeconds
         }
     } = state
-    if (!secondsIntoPomodoro && !secondsIntoBreak) {
+    if (!secondsIntoPomodoro && !secondsIntoBreak && !untrackedSeconds) {
         return undefined
     }
-    const secondsRemaining = secondsIntoPomodoro !== undefined ?
-        POMODORO_DURATION - secondsIntoPomodoro :
-        BREAK_DURATION - secondsIntoBreak
+    if (untrackedSeconds) {
+        return `+${getTimeString(untrackedSeconds)}`
+    }
+    const secondsRemaining = secondsIntoPomodoro !== undefined
+        ? POMODORO_DURATION - secondsIntoPomodoro
+        : BREAK_DURATION - secondsIntoBreak
     return getTimeString(secondsRemaining)
 }
 

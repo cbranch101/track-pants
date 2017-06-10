@@ -1,4 +1,5 @@
-import { app, BrowserWindow, Menu, shell, Tray } from 'electron'
+import { app, BrowserWindow, Menu, shell, Tray, globalShortcut } from 'electron'
+
 import path from 'path'
 import { configureElectronStore } from './store/configureStore'
 import trayTimer from './main/tray-timer'
@@ -49,8 +50,22 @@ app.on('ready', async () => {
         height: 728
     })
 
+    const popupMainWindow = () => mainWindow.show() && mainWindow.focus()
+
+    const toggleMainWindow = () => {
+        return mainWindow.isVisible() ? mainWindow.hide() : popupMainWindow()
+    }
+
+    globalShortcut.register('ctrl+e', () => {
+        toggleMainWindow()
+    })
+
+    mainWindow.setAlwaysOnTop(true)
+
     const iconPath = path.join(__dirname, '../resources/tray-icon.png')
     const appIcon = new Tray(iconPath)
+
+    appIcon.on('click', toggleMainWindow)
 
     store.subscribe(() => {
         const state = store.getState()
@@ -67,6 +82,8 @@ app.on('ready', async () => {
     mainWindow.on('closed', () => {
         mainWindow = null
     })
+
+    app.on('activate', toggleMainWindow)
 
     if (process.env.NODE_ENV === 'development') {
         mainWindow.openDevTools()

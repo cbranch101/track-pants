@@ -3,7 +3,11 @@ import { graphql } from 'react-apollo'
 import { push } from 'react-router-redux'
 import update from 'immutability-helper'
 import { connect } from 'react-redux'
+
+import { withTasks } from '../enhancers'
 import AllTasksTable from '../components/all-tasks-table'
+import Timer from '../components/timer'
+import TimeSummary from '../components/time-summary'
 import { CurrentTasks } from '../queries'
 import { UpdateTask } from '../mutations'
 
@@ -21,22 +25,16 @@ const RemoveTaskMutation = gql`
 
 const CreateTaskMutation = gql`
     mutation CreateTask($task: TaskInput) {
-      createTask(task:$task) {
-        id
-        name
-        estimatedPoms
-      }
-    }
-`
-const withTasks = graphql(CurrentTasks, {
-    props: ({ data: { taskList: tasks, loading, error } }) => {
-        if (error) throw new Error(error)
-        return {
-            loading,
-            tasks
+          createTask(task:$task) {
+              ...TimerTask
+              ...AllTasksTable
+              ...TimeSummary_task
         }
     }
-})
+    ${Timer.fragments.task}
+    ${AllTasksTable.fragments.task}
+    ${TimeSummary.fragments.task}
+`
 
 const withCreateTask = graphql(CreateTaskMutation, {
     props: ({ mutate }) => ({
@@ -47,25 +45,7 @@ const withCreateTask = graphql(CreateTaskMutation, {
                     const current = store.readQuery({ query: CurrentTasks })
                     const data = update(current, {
                         taskList: {
-                            $push: [
-                                {
-                                    ...newTask,
-                                    __typename: 'Task',
-                                    completed: false,
-                                    poms: {
-                                        __typename: 'PomResults',
-                                        completedCount: 0,
-                                        interruptedCount: 0,
-                                        anyRecorded: false,
-                                        byType: {
-                                            __typename: 'PomsByType',
-                                            completed: []
-                                        },
-                                    },
-                                    active: false,
-                                    archived: false
-                                }
-                            ]
+                            $push: [newTask]
                         }
                     })
                     store.writeQuery({ query: CurrentTasks, data })

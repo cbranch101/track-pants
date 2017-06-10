@@ -8,34 +8,58 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import { POMODORO_DURATION, BREAK_DURATION } from '../../actions/timer'
 import { getTimeString } from '../../utils/time'
 
-const Buttons = ({ timerStep, onStartPom, onStopPom, onStartBreak, onStopBreak, onBackToList }) => {
+const Buttons = ({
+    timerStep,
+    onStartPom,
+    onStopPom,
+    onStartBreak,
+    onStopBreak,
+    onBackToList,
+    onStopSession
+}) => {
     const buttons = []
     if (timerStep === 'waitingToStartPom') {
         buttons.push([
-            <RaisedButton onClick={onBackToList} backgroundColor={purple400} label="Back to List" />,
-            <RaisedButton onClick={onStartPom} backgroundColor={green400} label="Start Working" />
+            <RaisedButton
+                onClick={onBackToList}
+                backgroundColor={purple400}
+                label="Back to List"
+            />,
+            <RaisedButton onClick={onStartPom} backgroundColor={green400} label="Start Working" />,
+            <RaisedButton onClick={onStopSession} backgroundColor={red400} label="Stop Session" />
         ])
     }
     if (timerStep === 'inPom') {
         buttons.push([
-            <RaisedButton onClick={() => onStopPom(true)} backgroundColor={green400} label="Complete Early" />,
-            <RaisedButton onClick={() => onStopPom(false)} backgroundColor={red400} label="Interrupt" />,
+            <RaisedButton
+                onClick={() => onStopPom(true)}
+                backgroundColor={green400}
+                label="Complete Early"
+            />,
+            <RaisedButton
+                onClick={() => onStopPom(false)}
+                backgroundColor={red400}
+                label="Interrupt"
+            />
         ])
     }
     if (timerStep === 'waitingToStartBreak') {
         buttons.push([
             <RaisedButton onClick={onStartBreak} backgroundColor={green400} label="Start Break" />,
+            <RaisedButton onClick={onStopSession} backgroundColor={red400} label="Stop Session" />
         ])
     }
     if (timerStep === 'inBreak') {
         buttons.push([
-            <RaisedButton onClick={onStopBreak} backgroundColor={red400} label="Cancel Break" />,
+            <RaisedButton onClick={onStopBreak} backgroundColor={red400} label="Cancel Break" />
         ])
     }
 
-    return (<CardActions>
-        {buttons}
-    </CardActions>)
+    return (
+        <CardActions>
+            {buttons}
+        </CardActions>
+    )
 }
 
 Buttons.propTypes = {
@@ -45,27 +69,30 @@ Buttons.propTypes = {
     onStartBreak: PropTypes.func.isRequired,
     onStopBreak: PropTypes.func.isRequired,
     onBackToList: PropTypes.func.isRequired,
+    onStopSession: PropTypes.func.isRequired
 }
 
 const TimerText = ({ timer, timerStep }) => {
     if (timerStep !== 'inPom' && timerStep !== 'inBreak') return null
-    const secondsRemaining = timerStep === 'inPom' ?
-        POMODORO_DURATION - timer.pomodoro :
-        BREAK_DURATION - timer.currentBreak
-    return (<CardText>
-        {getTimeString(secondsRemaining)}
-    </CardText>)
+    const secondsRemaining = timerStep === 'inPom'
+        ? POMODORO_DURATION - timer.pomodoro
+        : BREAK_DURATION - timer.currentBreak
+    return (
+        <CardText>
+            {getTimeString(secondsRemaining)}
+        </CardText>
+    )
 }
 
 TimerText.propTypes = {
     timerStep: PropTypes.string.isRequired,
     timer: PropTypes.shape({
         pomodoro: PropTypes.number,
-        currentBreak: PropTypes.number,
+        currentBreak: PropTypes.number
     })
 }
 
-const TimerCard = (props) => {
+const TimerCard = props => {
     const {
         task,
         timerStep,
@@ -74,23 +101,27 @@ const TimerCard = (props) => {
         onStopPom,
         onStopBreak,
         onBackToList,
-        timer,
+        onStopSession,
+        timer
     } = props
-    return (<Card>
-        <CardHeader
-            title={task.name}
-            subtitle={`Estimated: ${task.estimatedPoms}, Actual: ${task.poms.completedCount}`}
-        />
-        <TimerText timerStep={timerStep} timer={timer} />
-        <Buttons
-            timerStep={timerStep}
-            onStartPom={onStartPom}
-            onStopPom={onStopPom}
-            onStartBreak={onStartBreak}
-            onStopBreak={onStopBreak}
-            onBackToList={onBackToList}
-        />
-    </Card>)
+    return (
+        <Card>
+            <CardHeader
+                title={task.name}
+                subtitle={`Estimated: ${task.estimatedPoms}, Actual: ${task.poms.completedCount}`}
+            />
+            <TimerText timerStep={timerStep} timer={timer} />
+            <Buttons
+                timerStep={timerStep}
+                onStartPom={onStartPom}
+                onStopPom={onStopPom}
+                onStartBreak={onStartBreak}
+                onStopBreak={onStopBreak}
+                onBackToList={onBackToList}
+                onStopSession={onStopSession}
+            />
+        </Card>
+    )
 }
 
 TimerCard.fragments = {
@@ -110,15 +141,16 @@ TimerCard.fragments = {
 TimerCard.propTypes = {
     timer: PropTypes.shape({
         pomodoro: PropTypes.number,
-        currentBreak: PropTypes.number,
+        currentBreak: PropTypes.number
     }),
     timerStep: PropTypes.string.isRequired,
     onStartPom: PropTypes.func.isRequired,
     onStopPom: PropTypes.func.isRequired,
     onStartBreak: PropTypes.func.isRequired,
     onStopBreak: PropTypes.func.isRequired,
+    onStopSession: PropTypes.func.isRequired,
     onBackToList: PropTypes.func.isRequired,
-    task: propType(TimerCard.fragments.task),
+    task: propType(TimerCard.fragments.task)
 }
 
 export default TimerCard

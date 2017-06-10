@@ -4,7 +4,14 @@ import { push } from 'react-router-redux'
 import gql from 'graphql-tag'
 import Timer from '../components/timer'
 import { SelectedTask } from '../queries'
-import { startPomodoro, stopPomodoro, startBreak, stopBreak } from '../actions/timer'
+import {
+    startPomodoro,
+    stopPomodoro,
+    startBreak,
+    stopBreak,
+    startCountingUntracked,
+    stopCountingUntracked
+} from '../actions/timer'
 
 const withTask = graphql(SelectedTask, {
     options: ({ params }) => {
@@ -30,12 +37,20 @@ const UpdateTaskMutation = gql`
     }
 `
 
+const PomFields = gql`
+    fragment PomFields on Pom {
+        interrupted
+        taskID
+    }
+`
+
 const CreatePomMutation = gql`
     mutation CreatePom($pom: PomInput) {
       createPom(pom:$pom) {
-          id
+          ...PomFields
       }
     }
+    ${PomFields}
 `
 
 const withUpdateTask = graphql(UpdateTaskMutation, {
@@ -48,18 +63,45 @@ const withUpdateTask = graphql(UpdateTaskMutation, {
     })
 })
 
+const TaskFragment = gql`
+    fragment UpdatedTask on Task {
+        poms {
+            completedCount
+        }
+    }
+`
+
 const withCreatePom = graphql(CreatePomMutation, {
     props: ({ mutate }) => ({
         createPom: pom => {
             return mutate({
                 variables: { pom },
-                refetchQueries: ['CurrentTasks', 'SelectedTask']
+                update: (store, { data: { createPom: newPom } }) => {
+                    const currentTask = store.readFragment({
+                        id: newPom.taskID,
+                        fragment: TaskFragment
+                    })
+                    const updatedTask = {
+                        ...currentTask,
+                        poms: {
+                            completedCount: newPom.interrupted
+                                ? currentTask.poms.completedCount
+                                : currentTask.poms.completedCount + 1
+                        }
+                    }
+                    store.writeFragment({
+                        id: newPom.taskID,
+                        fragment: TaskFragment,
+                        data: updatedTask
+                    })
+                }
             })
         }
     })
 })
 
 const backToList = () => push('/active-tasks')
+const backToSummary = () => push('/time-summary')
 
 const withRedux = connect(
     state => ({
@@ -72,7 +114,10 @@ const withRedux = connect(
         },
         startBreak,
         stopBreak,
-        backToList
+        startCountingUntracked,
+        stopCountingUntracked,
+        backToList,
+        backToSummary
     }
 )
 
