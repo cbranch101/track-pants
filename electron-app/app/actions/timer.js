@@ -1,8 +1,8 @@
 import { START_TIMER, ADVANCE_TIMER, STOP_TIMER } from '../reducers/timer'
 
-export const POMODORO_DURATION = 5
-export const EARLY_COMPLETION_THRESHOLD = 3
-export const BREAK_DURATION = 2
+export const POMODORO_DURATION = 1500
+export const EARLY_COMPLETION_THRESHOLD = 300
+export const BREAK_DURATION = 300
 
 export const startTimer = (name, value) => ({
     type: START_TIMER,

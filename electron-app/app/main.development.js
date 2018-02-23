@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, shell, Tray, globalShortcut } from 'electron'
 
 import path from 'path'
-import { configureElectronStore } from './store/configureStore'
+import configureElectronStore from './store/configureElectronStore'
 import trayTimer from './main/tray-timer'
 
 let menu

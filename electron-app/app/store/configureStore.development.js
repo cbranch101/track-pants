@@ -1,13 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
-import {
-    forwardToRenderer,
-    triggerAlias,
-    replayActionMain,
-    forwardToMain,
-    replayActionRenderer,
-    getInitialStateRenderer
-} from 'electron-redux'
+import { forwardToMain, replayActionRenderer, getInitialStateRenderer } from 'electron-redux'
 import { hashHistory } from 'react-router'
 import { routerMiddleware, push } from 'react-router-redux'
 import createLogger from 'redux-logger'
@@ -49,12 +42,5 @@ export default function configureStore() {
     }
 
     replayActionRenderer(store)
-    return store
-}
-
-export function configureElectronStore(initialState: Object) {
-    const enhancer = compose(applyMiddleware(triggerAlias, thunk, forwardToRenderer))
-    const store = createStore(rootReducer, initialState, enhancer)
-    replayActionMain(store)
     return store
 }
